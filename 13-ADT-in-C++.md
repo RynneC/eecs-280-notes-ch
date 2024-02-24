@@ -302,7 +302,22 @@ int main() {
 
 ### 13.4.1 使用 member initializer list 的 Constructors
 
-实际上，刚才这样的 initializer 是一个很低效而且有时候不会起作用的方式（之后会讲）。每个 member variable 都被 default initialized 了一次之后又被重新设置了一个值。
+实际上，我们一直以来使用的像刚才这样的 constructors 有时候是**低效而且甚至在有些时候是会出错误的。 **
+
+```c++
+class Triangle {
+private:
+	double a; 
+	double b; 
+	double c;
+public:
+  Triangle(double a_in, double b_in, double c_in) {
+		a = a_in;
+    b = b_in;
+    c = c_in;
+  }
+};
+```
 
 我们有一个更加高效的方式叫做 **member initializer list**:
 
@@ -317,6 +332,43 @@ public:
     : a(a_in), b(b_in), c(c_in) {}  //这里的顺序不重要. {}里面不需要写东西
 };
 ```
+
+这两个 constructor 在这里并没有作用和性能上的区别，但是如果我们的 class `Triangle` 的 member 里包含了另一个 class 型的变量，那么就出现了很大的区别。
+
+**因为其实 compiler 对于 constructor 会自动加上 initializer list.**
+
+这个自动的 initializer list 是一个只声明变量，而不赋值的 list.
+
+就是:
+
+```c++
+// 对于
+  Triangle(double a_in, double b_in, double c_in) {
+		a = a_in;
+    b = b_in;
+    c = c_in;
+  }
+
+// compiler 会自动加上 initializer list, 相当于：
+	Triangle(double a_in, double b_in, double c_in) 
+  : a, b, c {
+		a = a_in;
+    b = b_in;
+    c = c_in;
+  }
+```
+
+对于 `int`, `double` 这些 types 的类成员，compiler 并不会给它们赋默认值，而是只是声明一个这样的变量。所以不论是 initializer list 还是直接写在框里都一样，因为这不会有性能的区别
+
+但是自然地，对于 class 型的成员，这个 default 的行为会先使用该 class 成员的 default constructor 来初始化这个成员，然后再进入框体。因为声明 class 型的变量的同时就默认它被 default constucted.
+
+所以说，如果这个 class 的成员中包括了另一个 class，那么 compiler 就会自动调用这个另一个 class 的 default constructor 来进行 initialize 这个成员。而后，我们才在框体中重新给这个 class member 赋新值。
+
+这样的一个问题是，如果这个作为成员的 class 很大，那么我们就浪费了几乎一倍的性能。
+
+另一个问题是，如果这个作为成员的 class 只写了带参数的 constructor 而导致它已经没有 default constructor 了，那么就会直接报错。尽管我们在框体里写了调用那个带参数的 constructor 来初始化这个 member，由于 compiler 自动尝试调用它的 default constructor，还是发生了错误。
+
+而 initializer list 就会避免这个错误，直接把 compiler 自动尝试调用它的 default constructor 的行为换成了调用你选定的正确的 constructor。
 
 ### 13.4.2 多个 Constructors
 
