@@ -340,31 +340,29 @@ arr1 = arr2
 
 但是 array 返回给 `=` 这个赋值运算符的不是它自己，而是只是返回它首元素的地址。
 
-我们理解一下：我们刚才说到，array 就是一个很类似于指针的 object 类型，但是它并不是，它的返回值虽然是地址，但是它自己是一个复杂的复合型变量。
+我们理解一下：我们刚才说到，array 就是一个很类似于指针的 object 类型，但是它并不是，它的 copy constructor 的做法以及 assignment operator `=` 的 return value 虽然是首元素地址，但是它自己是一个复杂的复合型变量（`class`）。
 
-所以这就是 type error 的原因。compiler 看到的是我们尝试把一个单纯的 32 bit 地址赋给一个复杂的复合型变量。
+所以这就是 type error 的原因。compiler 看到的是我们尝试把一个单纯的 32 bit 地址赋给一个复杂的复合型变量。并没有这样一个 `operator=` 的 overload，其左边参数是 `int *` object, 右边是 `array` 这个 compound object.
 
-（其实写 C++ 的人可以重写一个 `=` 来 override 这个运算符，让 `=` 对于两个 array 只把后面的 array 的返回值赋给前面的 array 储存的地址值，但是他说他的理念是不允许这么做，因而把 array 类存储的地址设置成了类似于 const 的，这就从根源上拒绝了我们这么做，否则我们也可以重写一个）
+（其实不仅没有，我们自己也没办法重写一个 `=` 来 overload  `operator=` ，因为c++ std 把 array 类存储的地址设置成 const 的，这就从根源上拒绝了我们这么做，否则我们也可以重写一个）
 
-#### 8.2.5.1 然而 class 型 object 即 `Class` 和 `struct` 是允许这么做的
+#### 8.2.5.1 然而 class 型 object 即 `class` 和 `struct` 是允许这么做的
 
-省流：两个相同类型的 `Class` 或者 `struct` 型 object 可以用 `=` 赋值。
+省流：两个相同类型的 `class` 或者 `struct` 型 object 可以用 `=` 赋值。
 
-这也是一眼丁真的，因为我们说了，array 是 continuous 的 composite object，这是一个很严格的东西，非常搞；而 Class 和 strcut 是不 continous 的 composite object，这就可以随便搞，它赋值时返回的是所有的数据。
-
-就像对于一个 ring of  some analytic functions，我们要它 homormophic 到另外一个 ring of  some analytic functions，这tm是非常困难的，我们有很多限制条件；但是一个很随便的 finite set 我们总是能随便定义一些映射把它映射到另一个上。
+实际上这就是 copy constrctor (和 default constructor 一样自动生成) 所做的事情。
 
 #### 8.2.5.2 Array Decay 在 function parameter 中
 
-我们听过一个说法叫做 function 对于 array 的参数是自动 pass by parameter 的，但是这种说法是错误的。实际上还是 pass by value 的。经过刚才的论述我们大概已经知道了。
+我们听过一个说法叫做 function 对于 array 的参数是自动 pass by reference 的，但是这种说法是错误的。实际上还是 pass by value 的。经过刚才的论述我们大概已经知道了。
 
-首先这个行为合法是因为 **function 的 parameter passing 并不是一个创建一个 copy 并野蛮使用 `=` 赋值的过程。**它其实是通过调用复制构造函数（Copy Constructor）来创建的。
+首先这个行为合法是因为 **function 的 parameter passing 并不是一个创建一个 copy 并野蛮使用 `=` 赋值的过程。**它其实是通过调用复制构造函数**（copy Constructor）**来创建的。
 
 **而 C++ 这个语言的设计就是：当我们传递一个指针作为参数时，我们生成的 local variable 不是一个数组而是一个单纯的指针，名字和传进去的 array 名相同，但是它是一个单纯的 pointer 类。**
 
 比如我们传进去 `int a[]`，生成的局部变量就是 `int *a`.
 
-所以我们传进去的 array 就是传进去它首元素的地址，是一个单纯的地址值。是 array 的赋值返回值。因而没有 type error。不像我们直接 `arr1 = arr2` 就有 type error。
+所以我们传进去的 array 就是传进去它首元素的地址，是一个单纯的地址值，这是因为 copy constructor 会在函数的 stack frame 中新建一个 array object，然后 复制原 array 的所有 members 。因而没有 type error。不像我们直接 `arr1 = arr2` 就有 type error。
 
 这个时候我们有一个问题：现在 `int a[]` 这个东西单纯只是一个地址而不是 array 了，为什么我们还能使用 `a[2]` 进行检索呢？
 
@@ -407,7 +405,7 @@ cout << sizeof(int) << endl; //4
 
 ### 8.3.2 Pointer Offset: `ptr + x`
 
-Def1：**`ptr + x` 解引用的是 memory 中前方第 x 个 int 型变量，也就是 前方 `i * sizeof(int)`个地址的东西.**
+Def1：**`ptr + x` 解引用的是 memory 中前方第 x 个 `*ptr` 型变量，也就是 前方 `i * sizeof(*ptr)`个地址的东西.**
 
 这里的 `ptr` 是一个 pointer type，存放的是地址，而 `x` 则是一个 int 型. 通常而言两个不同类的变量的值是不能相加的，但是这里是一个新的语法定义：定义 poiter 型变量加上 int 型变量 `x` 的意思是地址后推 `x` 个 int 的大小. 
 

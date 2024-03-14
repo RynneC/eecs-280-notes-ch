@@ -274,7 +274,7 @@ int main() {
 }
 ```
 
-<img src="C:\Users\19680\Documents\GitHub\23W-EECS-280\Assets\image-20240127141603100.png" alt="image-20240127141603100" style="zoom:67%;" />
+<img src="Assets\image-20240127141603100.png" alt="image-20240127141603100"  />
 
 ## 7.4 Unit Testing
 

@@ -59,7 +59,7 @@ const char *ptr = "yay";
 其实就是
 
 ```c++
-const char[] ptr = "yay";
+char[] ptr = "yay";
 ```
 
 但是**这并不是在 stack frame 里面的。**我们是在 **read only segement** 创建了一个没有名字的 C-string 内容为"yay"。但是我们同时定义了一个 pointer to const 叫做 `ptr`，存储它的首元素地址，那么 `ptr` 就和数组名有基本相同的作用，相当于模拟了 array 名。我们可以用 `ptr[n]` 来 slice.

@@ -148,7 +148,7 @@ C++ 中有一个 library 中的 stream objects 可以模拟 stdin/stdout. 它们
 引用这个 library:
 
 ```c++
-// ifstream and ofstream live 
+// ifstream and ofstream live `
 // in the fstream library 
 #include <fstream>
 ```

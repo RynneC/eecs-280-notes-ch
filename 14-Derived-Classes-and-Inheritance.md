@@ -280,7 +280,7 @@ Bicycle::Bicycle()
 
 所以这个 initialization 并不成功。
 
-## 14.4 在 Derived Class 中 Override base class 的 member functions
+## 14.4 在 Derived Class 中 override base class 的 member functions
 
 ```c++
 class Vehicle {
@@ -326,4 +326,14 @@ Vehicle::Vehicle();
 Vehicle::Vehicle(int nw_in, string color_in, int year_in);
 ```
 
-我们可以在 Derived class 的
+我们可以在 Derived class 的 override 的 function 后面写上 `override`。这个是 optional 的但是有用。有助于 catch mistakes。
+
+```c++
+double get_insurance_amount() const override;
+```
+
+### 14.4.2 UML(unified modeling language) diagram
+
+<img src="Assets/Screenshot 2024-02-20 at 18.08.06.png" alt="Screenshot 2024-02-20 at 18.08.06" style="zoom:80%;" />
+
+<img src="Assets/Screenshot 2024-02-20 at 18.09.45.png" alt="Screenshot 2024-02-20 at 18.09.45" style="zoom:50%;" />
