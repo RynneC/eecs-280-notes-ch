@@ -192,6 +192,14 @@ int main() {
 }
 ```
 
+### 23.2.5 Acknowledgement: function pointer 在 C++ 中是一种 first-class object
+
+First-class objects 在 C++ 中指的是：
+
+能够被 1. passed as an argument; 2. returned from a function; 3. stored in a variable 的 object
+
+C++ 中的 function pointer 是一种 first-class object.
+
 ## 23.3 Functors: 模拟 function 的行为
 
 我们之前学了 Iterator 的理念：iterator 就是用一个 class 模拟 pointer 的行为。
